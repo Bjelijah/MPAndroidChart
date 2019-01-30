@@ -6,11 +6,12 @@ import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -42,19 +43,64 @@ import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
+
 public class BarChartActivity extends DemoBase implements OnSeekBarChangeListener,
         OnChartValueSelectedListener {
 
     private BarChart chart;
     private SeekBar seekBarX, seekBarY;
     private TextView tvX, tvY;
-
+    private Button btn;
+    private int x=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_barchart);
+
+        btn = findViewById(R.id.myBtn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Matrix mMatrix=new Matrix();
+//                mMatrix.postScale(1.5f, 1f);
+//                chart.getViewPortHandler().refresh(mMatrix, chart, false);
+//                chart.animateY(800);//缩放显示
+
+                chart.moveViewToAnimated(--x, chart.getBarData().getYMax(),
+                        YAxis.AxisDependency.RIGHT, 300);
+
+
+            }
+        });
+        findViewById(R.id.myBtn2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                chart.moveViewToX(x++); //移动
+//                chart.moveViewToAnimated(x++,);//x轴显示
+                chart.moveViewToAnimated(++x, chart.getBarData().getYMax(),
+                        YAxis.AxisDependency.RIGHT, 300);
+
+            }
+        });
+
+        findViewById(R.id.myBtn3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                x=0;
+               // chart.setVisibleXRangeMaximum(10f);
+                chart.setVisibleXRangeMinimum(5f);
+          //      chart.setScaleEnabled(false);
+           //     chart.setHorizontalScrollBarEnabled(true);
+           //     chart.setDragEnabled(false);
+            //    chart.setFocusableInTouchMode(true);
+            //    chart.setDrawBarShadow(true);
+                chart.invalidate();
+            }
+        });
+
 
         setTitle("BarChartActivity");
 
@@ -129,7 +175,7 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
 
         // setting data
         seekBarY.setProgress(50);
-        seekBarX.setProgress(12);
+        seekBarX.setProgress(40);
 
         // chart.setDrawLegend(false);
     }
@@ -144,9 +190,9 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
             float val = (float) (Math.random() * (range + 1));
 
             if (Math.random() * 100 < 25) {
-                values.add(new BarEntry(i, val, getResources().getDrawable(R.drawable.star)));
+                values.add(new BarEntry(i, i, getResources().getDrawable(R.drawable.star)));
             } else {
-                values.add(new BarEntry(i, val));
+                values.add(new BarEntry(i, i));
             }
         }
 
