@@ -9,6 +9,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 
+import com.github.mikephil.charting.UserHelper.MoveHelper;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
@@ -190,7 +191,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
                         boolean shouldPan = !mChart.isFullyZoomedOut() ||
                                 !mChart.hasNoDragOffset();
 
-                        if (shouldPan) {
+                        if (shouldPan && MoveHelper.sIsDragEnable) {
 
                             float distanceX = Math.abs(event.getX() - mTouchStartPoint.x);
                             float distanceY = Math.abs(event.getY() - mTouchStartPoint.y);
@@ -445,6 +446,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
 
         if (h != null && !h.equalTo(mLastHighlighted)) {
             mLastHighlighted = h;
+            Log.i("123","performHighlightDrag");
             mChart.highlightValue(h, true);
         }
     }

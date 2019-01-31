@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.UserHelper.MoveHelper;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.Legend.LegendForm;
@@ -32,6 +34,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.model.GradientColor;
 import com.github.mikephil.charting.utils.MPPointF;
@@ -90,16 +94,20 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
             @Override
             public void onClick(View view) {
                 x=0;
-               // chart.setVisibleXRangeMaximum(10f);
+                chart.setVisibleXRangeMaximum(10f);
                 chart.setVisibleXRangeMinimum(5f);
           //      chart.setScaleEnabled(false);
            //     chart.setHorizontalScrollBarEnabled(true);
-           //     chart.setDragEnabled(false);
+            //   chart.setDragEnabled(true);
+            //    chart.setHighlightPerDragEnabled(true);
             //    chart.setFocusableInTouchMode(true);
             //    chart.setDrawBarShadow(true);
+
+                chart.getViewPortHandler().setDragOffsetY(1);
                 chart.invalidate();
             }
         });
+
 
 
         setTitle("BarChartActivity");
@@ -178,6 +186,60 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
         seekBarX.setProgress(40);
 
         // chart.setDrawLegend(false);
+        chart.setOnChartGestureListener(new OnChartGestureListener() {
+            @Override
+            public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+              //  Log.i("123","onChartGestureStart  me="+me+"   last="+lastPerformedGesture);
+                float y = me.getY();
+                Log.i("123","Y="+y);
+                MoveHelper.sIsDragEnable = y>1400;
+            }
+
+            @Override
+            public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+//                Log.i("123","onChartGestureEnd   me="+me+"  last="+lastPerformedGesture);
+                float y = me.getY();
+                Log.i("123","Y="+y);
+            }
+
+            @Override
+            public void onChartLongPressed(MotionEvent me) {
+                Log.i("123","onChartLongPressed");
+            }
+
+            @Override
+            public void onChartDoubleTapped(MotionEvent me) {
+                Log.i("123","onChartDoubleTapped");
+            }
+
+            @Override
+            public void onChartSingleTapped(MotionEvent me) {
+                Log.i("123","onChartSingleTapped");
+            }
+
+            @Override
+            public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
+                Log.i("123","onChartFling");
+            }
+
+            @Override
+            public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
+                Log.i("123","onChartScale");
+            }
+
+            @Override
+            public void onChartTranslate(MotionEvent me, float dX, float dY) {
+                Log.i("123","onChartTranslate");
+            }
+        });
+
+        chart.setOnGenericMotionListener(new View.OnGenericMotionListener() {
+            @Override
+            public boolean onGenericMotion(View v, MotionEvent event) {
+                Log.i("123","onGenericMotion   event="+event.getAction());
+                return false;
+            }
+        });
     }
 
     private void setData(int count, float range) {
@@ -363,13 +425,18 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
         chart.getBarBounds((BarEntry) e, bounds);
         MPPointF position = chart.getPosition(e, AxisDependency.LEFT);
 
+
+        String xStr = chart.getXAxis().getValueFormatter().getBarLabel((BarEntry) e);
+        String yStr = chart.getAxisLeft().getValueFormatter().getBarLabel((BarEntry) e);
+        Log.i("123","entry="+((BarEntry)e).toString()+"   xLabel="+xStr+"  leftYLable="+yStr);
+        /*
         Log.i("bounds", bounds.toString());
-        Log.i("position", position.toString());
+        Log.i("position   x=", position.getX()+"   y="+position.getY());
 
         Log.i("x-index",
                 "low: " + chart.getLowestVisibleX() + ", high: "
                         + chart.getHighestVisibleX());
-
+        */
         MPPointF.recycleInstance(position);
     }
 
